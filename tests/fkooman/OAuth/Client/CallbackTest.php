@@ -21,6 +21,8 @@ use Guzzle\Http\Client;
 use Guzzle\Plugin\Mock\MockPlugin;
 use Guzzle\Http\Message\Response;
 
+use fkooman\OAuth\Common\Scope;
+
 class CallbackTest extends \PHPUnit_Framework_TestCase
 {
     /** @var array */

@@ -3,8 +3,45 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "5b4e5a4bd2d60afc3e55db2a17d4ac65",
+    "hash": "8349727dbc98d8b02289750b570c4804",
     "packages": [
+        {
+            "name": "fkooman/php-oauth-lib-common",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fkooman/php-oauth-lib-common.git",
+                "reference": "e863e0bdf50e6a45b9e894352081335856478bc3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fkooman/php-oauth-lib-common/zipball/e863e0bdf50e6a45b9e894352081335856478bc3",
+                "reference": "e863e0bdf50e6a45b9e894352081335856478bc3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "fkooman\\OAuth\\Common\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "François Kooman",
+                    "email": "fkooman@tuxed.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP library for common OAuth classes.",
+            "time": "2013-10-07 13:27:45"
+        },
         {
             "name": "guzzle/guzzle",
             "version": "v3.7.4",
@@ -754,9 +791,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "fkooman/php-oauth-lib-common": 20
+    },
     "platform": {
         "ext-openssl": "*",
         "php": ">=5.3.3"

@@ -17,6 +17,8 @@
 
 namespace fkooman\OAuth\Client;
 
+use fkooman\OAuth\Common\Scope;
+
 /**
  * API for talking to OAuth 2.0 protected resources.
  *
@@ -197,7 +199,7 @@ class Api
 
         // scope
         $contextScope = $context->getScope();
-        if (!$contextScope->isEmptyScope()) {
+        if (!$contextScope->isEmpty()) {
             $q['scope'] = $contextScope->getScopeAsString();
         }
 

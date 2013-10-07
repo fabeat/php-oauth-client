@@ -17,6 +17,8 @@
 
 namespace fkooman\OAuth\Client;
 
+use fkooman\OAuth\Common\Scope;
+
 class TokenResponseTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -36,7 +38,7 @@ class TokenResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("Bearer", $t->getTokenType());
         $this->assertEquals(5, $t->getExpiresIn());
         $this->assertEquals("bar", $t->getRefreshToken());
-        $this->assertEquals("foo", $t->getScope()->getScopeAsString());
+        $this->assertTrue($t->getScope()->isEqual(new Scope("foo")));
     }
 
     public function testScope()
@@ -49,7 +51,7 @@ class TokenResponseTest extends \PHPUnit_Framework_TestCase
             )
         );
         // scope will be sorted de-duplicated string space separated
-        $this->assertEquals("bar baz foo", $t->getScope()->getScopeAsString());
+        $this->assertTrue($t->getScope()->isEqual(new Scope("bar baz foo")));
     }
 
     /**

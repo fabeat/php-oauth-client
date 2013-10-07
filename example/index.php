@@ -2,9 +2,20 @@
 
 require_once 'vendor/autoload.php';
 
+use fkooman\OAuth\Client\ClientConfig;
+use fkooman\OAuth\Client\SessionStorage;
+use fkooman\OAuth\Client\Api;
+use fkooman\OAuth\Client\Context;
+use fkooman\OAuth\Common\Scope;
+
+use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
+use fkooman\Guzzle\Plugin\BearerAuth\Exception\BearerErrorResponseException;
+
+use Guzzle\Http\Client;
+
 $apiUri = "http://localhost/oauth/php-oauth/api.php/authorizations/";
 
-$clientConfig = new \fkooman\OAuth\Client\ClientConfig(
+$clientConfig = new ClientConfig(
     array(
         "authorize_endpoint" => "http://localhost/oauth/php-oauth/authorize.php",
         "client_id" => "php-oauth-client-example",
@@ -13,11 +24,14 @@ $clientConfig = new \fkooman\OAuth\Client\ClientConfig(
     )
 );
 
-$tokenStorage = new \fkooman\OAuth\Client\SessionStorage();
-$httpClient = new \Guzzle\Http\Client();
-$api = new fkooman\OAuth\Client\Api("foo", $clientConfig, $tokenStorage, $httpClient);
+$tokenStorage = new SessionStorage();
+$httpClient = new Client();
+$api = new Api("foo", $clientConfig, $tokenStorage, $httpClient);
 
-$context = new \fkooman\OAuth\Client\Context("john.doe@example.org", new \fkooman\OAuth\Client\Scope("authorizations"));
+$context = new Context(
+    "john.doe@example.org",
+    new Scope("authorizations")
+);
 
 $accessToken = $api->getAccessToken($context);
 if (false === $accessToken) {
@@ -28,13 +42,13 @@ if (false === $accessToken) {
 }
 
 try {
-    $client = new \Guzzle\Http\Client();
-    $bearerAuth = new \fkooman\Guzzle\Plugin\BearerAuth\BearerAuth($accessToken->getAccessToken());
+    $client = new Client();
+    $bearerAuth = new BearerAuth($accessToken->getAccessToken());
     $client->addSubscriber($bearerAuth);
     $response = $client->get($apiUri)->send();
     header("Content-Type: application/json");
     echo $response->getBody();
-} catch (\fkooman\Guzzle\Plugin\BearerAuth\Exception\BearerErrorResponseException $e) {
+} catch (BearerErrorResponseException $e) {
     if ("invalid_token" === $e->getBearerReason()) {
         // the token we used was invalid, possibly revoked, we throw it away
         $api->deleteAccessToken($context);
@@ -45,6 +59,6 @@ try {
         exit;
     }
     throw $e;
-} catch (\Exception $e) {
+} catch (Exception $e) {
     die(sprintf('ERROR: %s', $e->getMessage()));
 }
