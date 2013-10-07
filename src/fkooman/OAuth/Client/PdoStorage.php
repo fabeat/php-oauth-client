@@ -41,7 +41,7 @@ class PdoStorage implements StorageInterface
         $resultArray = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (false !== $resultArray) {
             foreach ($resultArray as $result) {
-                $scope = new Scope($result['scope']);
+                $scope = unserialize($result['scope']);
                 if ($scope->hasScope($context->getScope())) {
                     $result['scope'] = $scope;
 
@@ -90,7 +90,7 @@ class PdoStorage implements StorageInterface
         $resultArray = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (false !== $resultArray) {
             foreach ($resultArray as $result) {
-                $scope = new Scope($result['scope']);
+                $scope = unserialize($result['scope']);
                 if ($scope->hasScope($context->getScope())) {
                     $result['scope'] = $scope;
 
@@ -136,7 +136,7 @@ class PdoStorage implements StorageInterface
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (false !== $result) {
-            $result['scope'] = new Scope($result['scope']);
+            $result['scope'] = unserialize($result['scope']);
 
             return new State($result);
         }
