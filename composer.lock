@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "8349727dbc98d8b02289750b570c4804",
+    "hash": "672677aebd8576b634e900ea6e552649",
     "packages": [
         {
             "name": "fkooman/php-oauth-lib-common",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-oauth-lib-common.git",
-                "reference": "e863e0bdf50e6a45b9e894352081335856478bc3"
+                "reference": "927f1c39eef1e47f1cc2a578f88ecf4a733054f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-oauth-lib-common/zipball/e863e0bdf50e6a45b9e894352081335856478bc3",
-                "reference": "e863e0bdf50e6a45b9e894352081335856478bc3",
+                "url": "https://api.github.com/repos/fkooman/php-oauth-lib-common/zipball/927f1c39eef1e47f1cc2a578f88ecf4a733054f0",
+                "reference": "927f1c39eef1e47f1cc2a578f88ecf4a733054f0",
                 "shasum": ""
             },
             "require": {
@@ -40,7 +40,7 @@
                 }
             ],
             "description": "PHP library for common OAuth classes.",
-            "time": "2013-10-07 13:27:45"
+            "time": "2013-10-07 14:11:44"
         },
         {
             "name": "guzzle/guzzle",
@@ -791,9 +791,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "fkooman/php-oauth-lib-common": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": {
         "ext-openssl": "*",
         "php": ">=5.3.3"
