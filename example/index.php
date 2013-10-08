@@ -6,7 +6,6 @@ use fkooman\OAuth\Client\ClientConfig;
 use fkooman\OAuth\Client\SessionStorage;
 use fkooman\OAuth\Client\Api;
 use fkooman\OAuth\Client\Context;
-use fkooman\OAuth\Common\Scope;
 
 use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
 use fkooman\Guzzle\Plugin\BearerAuth\Exception\BearerErrorResponseException;
@@ -28,10 +27,7 @@ $tokenStorage = new SessionStorage();
 $httpClient = new Client();
 $api = new Api("foo", $clientConfig, $tokenStorage, $httpClient);
 
-$context = new Context(
-    "john.doe@example.org",
-    new Scope("authorizations")
-);
+$context = new Context("john.doe@example.org", "authorizations");
 
 $accessToken = $api->getAccessToken($context);
 if (false === $accessToken) {
