@@ -61,7 +61,7 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
         );
         $client->addSubscriber($mock);
 
-        $mockStorage = new MockStorage();
+        $baseStorage = new BaseStorage();
 
         $state = new State(
             array(
@@ -72,9 +72,9 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
                 "scope" => new Scope("foo bar")
             )
         );
-        $mockStorage->storeState($state);
+        $baseStorage->storeState($state);
 
-        $callback = new Callback("foo", $this->clientConfig[0], $mockStorage, $client);
+        $callback = new Callback("foo", $this->clientConfig[0], $baseStorage, $client);
 
         $tokenResponse = $callback->handleCallback(
             array(

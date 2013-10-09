@@ -44,13 +44,13 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAccessTokenWithoutToken()
     {
-        $mockStorage = new MockStorage();
+        $baseStorage = new BaseStorage();
         $client = new Client();
         $mock = new MockPlugin();
         $mock->addResponse(new Response(200));
         $client->addSubscriber($mock);
 
-        $api = new Api("foo", $this->clientConfig[0], $mockStorage, $client);
+        $api = new Api("foo", $this->clientConfig[0], $baseStorage, $client);
         $context = new Context("a_user", array("foo", "bar"));
 
         $this->assertFalse($api->getAccessToken($context));
@@ -59,13 +59,13 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAccessTokenWithToken()
     {
-        $mockStorage = new MockStorage();
+        $baseStorage = new BaseStorage();
         $client = new Client();
         $mock = new MockPlugin();
         $mock->addResponse(new Response(200));
         $client->addSubscriber($mock);
 
-        $api = new Api("foo", $this->clientConfig[0], $mockStorage, $client);
+        $api = new Api("foo", $this->clientConfig[0], $baseStorage, $client);
         $context = new Context("a_user", "foo bar");
 
         $accessToken = new AccessToken(
@@ -79,7 +79,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
                 "expires_in" => 3600
             )
         );
-        $mockStorage->storeAccessToken($accessToken);
+        $baseStorage->storeAccessToken($accessToken);
 
         $accessToken = $api->getAccessToken($context);
         $this->assertEquals("my_token_value", $accessToken->getAccessToken());
@@ -87,7 +87,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAccessTokenWithExpiredAccessTokenAndRefreshToken()
     {
-        $mockStorage = new MockStorage();
+        $baseStorage = new BaseStorage();
         $client = new Client();
         $mock = new MockPlugin();
         $mock->addResponse(
@@ -104,7 +104,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         );
         $client->addSubscriber($mock);
 
-        $api = new Api("foo", $this->clientConfig[0], $mockStorage, $client);
+        $api = new Api("foo", $this->clientConfig[0], $baseStorage, $client);
         $context = new Context("a_user", "foo bar");
 
         $accessToken = new AccessToken(
@@ -118,7 +118,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
                 "expires_in" => 3600
             )
         );
-        $mockStorage->storeAccessToken($accessToken);
+        $baseStorage->storeAccessToken($accessToken);
 
         $refreshToken = new RefreshToken(
             array(
@@ -129,7 +129,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
                 "issue_time" => time() - 10000,
             )
         );
-        $mockStorage->storeRefreshToken($refreshToken);
+        $baseStorage->storeRefreshToken($refreshToken);
 
         $accessToken = $api->getAccessToken($context);
         $this->assertEquals("my_new_access_token_value", $accessToken->getAccessToken());

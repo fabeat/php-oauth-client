@@ -19,7 +19,7 @@ namespace fkooman\OAuth\Client;
 
 use fkooman\OAuth\Common\Scope;
 
-class MockStorageTest extends \PHPUnit_Framework_TestCase
+class BaseStorageTest extends \PHPUnit_Framework_TestCase
 {
     /** @var fkooman\OAuth\Client\StorageInterface */
     private $s;
@@ -31,7 +31,7 @@ class MockStorageTest extends \PHPUnit_Framework_TestCase
             "foo bar"
         );
 
-        $this->s = new MockStorage();
+        $this->s = new BaseStorage();
 
         $this->s->storeAccessToken(
             new AccessToken(
