@@ -19,7 +19,7 @@ namespace fkooman\OAuth\Client;
 
 use fkooman\OAuth\Common\Scope;
 
-class Token
+class Token implements TokenInterface
 {
     /** @var string */
     private $clientConfigId;
@@ -27,7 +27,7 @@ class Token
     /** @var string */
     private $userId;
 
-    /** @var Scope | null */
+    /** @var fkooman\OAuth\Common\Scope */
     private $scope;
 
     /** @var int */
@@ -88,11 +88,28 @@ class Token
             throw new TokenException("issue_time should be positive integer");
         }
         $this->issueTime = (int) $issueTime;
-
     }
 
     public function getIssueTime()
     {
         return $this->issueTime;
+    }
+
+    public function isEqual(TokenInterface $token)
+    {
+        if ($this->clientConfigId !== $token->getClientConfigId()) {
+            return false;
+        }
+        if ($this->userId !== $token->getUserId()) {
+            return false;
+        }
+        if (!$this->scope->isEqual($token->getScope())) {
+            return false;
+        }
+        if ($this->issueTime !== $token->getIssueTime()) {
+            return false;
+        }
+
+        return true;
     }
 }

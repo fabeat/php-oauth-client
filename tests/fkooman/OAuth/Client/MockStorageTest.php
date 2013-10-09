@@ -39,9 +39,35 @@ class MockStorageTest extends \PHPUnit_Framework_TestCase
                     'client_config_id' => 'foo_client',
                     'user_id' => 'foo@example.org',
                     'scope' => new Scope('foo bar'),
-                    'issue_time' => time() - 100,
+                    'issue_time' => 1357913579,
                     'token_type' => 'bearer',
-                    'access_token' => 'access_token_value',
+                    'access_token' => 'foo_access_token_value',
+                    'expires_in' => 3600
+                )
+            )
+        );
+        $this->s->storeAccessToken(
+            new AccessToken(
+                array(
+                    'client_config_id' => 'foo_client',
+                    'user_id' => 'bar@example.org',
+                    'scope' => new Scope('foo baz'),
+                    'issue_time' => 1234567890,
+                    'token_type' => 'bearer',
+                    'access_token' => 'bar_access_token_value',
+                    'expires_in' => 3600
+                )
+            )
+        );
+        $this->s->storeAccessToken(
+            new AccessToken(
+                array(
+                    'client_config_id' => 'bar_client',
+                    'user_id' => 'foo@example.org',
+                    'scope' => new Scope('foo bar'),
+                    'issue_time' => 2468024580,
+                    'token_type' => 'bearer',
+                    'access_token' => 'foo_bar_access_token_value',
                     'expires_in' => 3600
                 )
             )
@@ -76,12 +102,14 @@ class MockStorageTest extends \PHPUnit_Framework_TestCase
         $accessToken = $this->s->getAccessToken('foo_client', new Context("foo@example.org", "foo bar"));
         $this->assertTrue($accessToken->getScope()->isEqual(new Scope("foo bar")));
         $this->assertEquals("bearer", $accessToken->getTokenType());
-        $this->assertEquals("access_token_value", $accessToken->getAccessToken());
+        $this->assertEquals("foo_access_token_value", $accessToken->getAccessToken());
     }
 
     public function testGetNonExistingAccessToken()
     {
         $this->assertFalse($this->s->getAccessToken('foo_client', new Context("foo@example.org", "foo baz")));
+        $this->assertFalse($this->s->getAccessToken('foo_client', new Context("na@example.org", "foo bar")));
+        $this->assertFalse($this->s->getAccessToken('baz_client', new Context("foo@example.org", "foo bar")));
     }
 
     public function testDeleteAccessToken()
@@ -91,6 +119,25 @@ class MockStorageTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->s->deleteAccessToken($accessToken));
         $accessToken = $this->s->getAccessToken('foo_client', new Context("foo@example.org", "foo bar"));
         $this->assertFalse($accessToken);
+    }
+
+    public function testDeleteNonExistingAccessToken()
+    {
+        $this->assertFalse(
+            $this->s->deleteAccessToken(
+                new AccessToken(
+                    array(
+                        'client_config_id' => 'foo_client',
+                        'user_id' => 'foo@example.org',
+                        'scope' => new Scope('foo baz'),
+                        'issue_time' => 1357913579,
+                        'token_type' => 'bearer',
+                        'access_token' => 'foo_access_token_value',
+                        'expires_in' => 3600
+                    )
+                )
+            )
+        );
     }
 
     public function testGetExistingRefreshToken()

@@ -17,10 +17,10 @@
 
 namespace fkooman\OAuth\Client;
 
-class State extends Token
+class State extends Token implements TokenInterface
 {
-    /** state VARCHAR(255) NOT NULL */
-    protected $state;
+    /** @var string */
+    private $state;
 
     public function __construct(array $data)
     {
@@ -46,5 +46,17 @@ class State extends Token
     public function getState()
     {
         return $this->state;
+    }
+
+    public function isEqual(TokenInterface $state)
+    {
+        if (!parent::isEqual($state)) {
+            return false;
+        }
+        if ($this->state !== $state->getState()) {
+            return false;
+        }
+
+        return true;
     }
 }

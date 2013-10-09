@@ -23,15 +23,17 @@ class MockStorage implements StorageInterface
 
     public function __construct()
     {
-        $this->storage = array();
+        $this->storage = array(
+            'php-oauth-client' => array(
+                'access_token' => array(),
+                'refresh_token' => array(),
+                'state' => array(),
+            )
+        );
     }
 
     public function getAccessToken($clientConfigId, Context $context)
     {
-        if (!isset($this->storage['php-oauth-client']['access_token'])) {
-            return false;
-        }
-
         foreach ($this->storage['php-oauth-client']['access_token'] as $t) {
             $token = unserialize($t);
             if ($clientConfigId !== $token->getClientConfigId()) {
@@ -52,10 +54,6 @@ class MockStorage implements StorageInterface
 
     public function storeAccessToken(AccessToken $accessToken)
     {
-        if (!isset($this->storage['php-oauth-client']['access_token'])) {
-            $this->storage['php-oauth-client']['access_token'] = array();
-        }
-
         array_push($this->storage['php-oauth-client']['access_token'], serialize($accessToken));
 
         return true;
@@ -63,13 +61,9 @@ class MockStorage implements StorageInterface
 
     public function deleteAccessToken(AccessToken $accessToken)
     {
-        if (!isset($this->storage['php-oauth-client']['access_token'])) {
-            return false;
-        }
-
         foreach ($this->storage['php-oauth-client']['access_token'] as $k => $t) {
             $token = unserialize($t);
-            if ($accessToken->getAccessToken() !== $token->getAccessToken()) {
+            if (!$token->isEqual($accessToken)) {
                 continue;
             }
             unset($this->storage['php-oauth-client']['access_token'][$k]);
@@ -82,10 +76,6 @@ class MockStorage implements StorageInterface
 
     public function getRefreshToken($clientConfigId, Context $context)
     {
-        if (!isset($this->storage['php-oauth-client']['refresh_token'])) {
-            return false;
-        }
-
         foreach ($this->storage['php-oauth-client']['refresh_token'] as $t) {
             $token = unserialize($t);
             if ($clientConfigId !== $token->getClientConfigId()) {
@@ -106,10 +96,6 @@ class MockStorage implements StorageInterface
 
     public function storeRefreshToken(RefreshToken $refreshToken)
     {
-        if (!isset($this->storage['php-oauth-client']['refresh_token'])) {
-            $this->storage['php-oauth-client']['refresh_token'] = array();
-        }
-
         array_push($this->storage['php-oauth-client']['refresh_token'], serialize($refreshToken));
 
         return true;
@@ -117,13 +103,9 @@ class MockStorage implements StorageInterface
 
     public function deleteRefreshToken(RefreshToken $refreshToken)
     {
-        if (!isset($this->storage['php-oauth-client']['refresh_token'])) {
-            return false;
-        }
-
         foreach ($this->storage['php-oauth-client']['refresh_token'] as $k => $t) {
             $token = unserialize($t);
-            if ($refreshToken->getRefreshToken() !== $token->getRefreshToken()) {
+            if (!$token->isEqual($refreshToken)) {
                 continue;
             }
             unset($this->storage['php-oauth-client']['refresh_token'][$k]);
@@ -136,10 +118,6 @@ class MockStorage implements StorageInterface
 
     public function getState($clientConfigId, $state)
     {
-        if (!isset($this->storage['php-oauth-client']['state'])) {
-            return false;
-        }
-
         foreach ($this->storage['php-oauth-client']['state'] as $s) {
             $sessionState = unserialize($s);
 
@@ -158,10 +136,6 @@ class MockStorage implements StorageInterface
 
     public function storeState(State $state)
     {
-        if (!isset($this->storage['php-oauth-client']['state'])) {
-            $this->storage['php-oauth-client']['state'] = array();
-        }
-
         array_push($this->storage['php-oauth-client']['state'], serialize($state));
 
         return true;
@@ -169,16 +143,12 @@ class MockStorage implements StorageInterface
 
     public function deleteStateForContext($clientConfigId, Context $context)
     {
-        if (!isset($this->storage['php-oauth-client']['state'])) {
-            return false;
-        }
-
         foreach ($this->storage['php-oauth-client']['state'] as $k => $s) {
-            $sessionState = unserialize($s);
-            if ($clientConfigId !== $sessionState->getClientConfigId()) {
+            $state = unserialize($s);
+            if ($clientConfigId !== $state->getClientConfigId()) {
                 continue;
             }
-            if ($context->getUserId() !== $sessionState->getUserId()) {
+            if ($context->getUserId() !== $state->getUserId()) {
                 continue;
             }
             unset($this->storage['php-oauth-client']['state'][$k]);
@@ -191,13 +161,9 @@ class MockStorage implements StorageInterface
 
     public function deleteState(State $state)
     {
-        if (!isset($this->storage['php-oauth-client']['state'])) {
-            return false;
-        }
-
         foreach ($this->storage['php-oauth-client']['state'] as $k => $s) {
             $sessionState = unserialize($s);
-            if ($state->getState() !== $sessionState->getState()) {
+            if (!$sessionState->isEqual($state)) {
                 continue;
             }
             unset($this->storage['php-oauth-client']['state'][$k]);

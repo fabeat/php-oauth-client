@@ -17,7 +17,7 @@
 
 namespace fkooman\OAuth\Client;
 
-class RefreshToken extends Token
+class RefreshToken extends Token implements TokenInterface
 {
     /** refresh_token VARCHAR(255) NOT NULL */
     private $refreshToken;
@@ -46,5 +46,17 @@ class RefreshToken extends Token
     public function getRefreshToken()
     {
         return $this->refreshToken;
+    }
+
+    public function isEqual(TokenInterface $token)
+    {
+        if (!parent::isEqual($token)) {
+            return false;
+        }
+        if ($this->refreshToken !== $token->getRefreshToken()) {
+            return false;
+        }
+
+        return true;
     }
 }

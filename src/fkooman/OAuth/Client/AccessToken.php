@@ -17,7 +17,7 @@
 
 namespace fkooman\OAuth\Client;
 
-class AccessToken extends Token
+class AccessToken extends Token implements TokenInterface
 {
     /** access_token VARCHAR(255) NOT NULL */
     private $accessToken;
@@ -87,5 +87,23 @@ class AccessToken extends Token
     public function getExpiresIn()
     {
         return $this->expiresIn;
+    }
+
+    public function isEqual(TokenInterface $token)
+    {
+        if (!parent::isEqual($token)) {
+            return false;
+        }
+        if ($this->accessToken !== $token->getAccessToken()) {
+            return false;
+        }
+        if ($this->tokenType !== $token->getTokenType()) {
+            return false;
+        }
+        if ($this->expiresIn !== $token->getExpiresIn()) {
+            return false;
+        }
+
+        return true;
     }
 }
