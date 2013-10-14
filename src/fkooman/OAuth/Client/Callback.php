@@ -18,6 +18,7 @@
 namespace fkooman\OAuth\Client;
 
 use Guzzle\Http\Client;
+use fkooman\OAuth\Common\Scope;
 
 class Callback
 {
