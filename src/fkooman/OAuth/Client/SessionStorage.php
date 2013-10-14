@@ -21,6 +21,8 @@ class SessionStorage extends BaseStorage implements StorageInterface
 {
     public function __construct()
     {
+        parent::__construct();
+
         if ('' === session_id()) {
             // no session currently exists, start a new one
             session_start();
@@ -28,12 +30,6 @@ class SessionStorage extends BaseStorage implements StorageInterface
 
         if (isset($_SESSION['php-oauth-client'])) {
             $this->storage = $_SESSION['php-oauth-client'];
-        } else {
-            $this->storage = array(
-                'access_token' => array(),
-                'refresh_token' => array(),
-                'state' => array(),
-            );
         }
     }
 

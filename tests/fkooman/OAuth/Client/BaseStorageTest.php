@@ -30,10 +30,10 @@ class BaseStorageTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        //$this->s = new BaseStorage();
-        $db = new \PDO("sqlite:/tmp/client.sqlite");
-        $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->s = new PdoStorage($db);
+        $this->s = new BaseStorage();
+        //$db = new \PDO("sqlite:/tmp/client.sqlite");
+        //$db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        //$this->s = new PdoStorage($db);
 
         $this->accessTokens = array();
         $this->refreshTokens = array();
