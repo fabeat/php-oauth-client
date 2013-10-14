@@ -22,7 +22,12 @@ class ClientConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testSimple()
     {
-        $data = array("client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token");
+        $data = array(
+            "client_id" => "foo",
+            "client_secret" => "bar",
+            "authorize_endpoint" => "http://www.example.org/authorize",
+            "token_endpoint" => "http://www.example.org/token"
+        );
         $c = new ClientConfig($data);
         $this->assertEquals("foo", $c->getClientId());
         $this->assertEquals("bar", $c->getClientSecret());
@@ -34,7 +39,14 @@ class ClientConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testLessSimple()
     {
-        $data = array("client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token", "redirect_uri" => "http://www.example.org/callback", "credentials_in_request_body" => true);
+        $data = array(
+            "client_id" => "foo",
+            "client_secret" => "bar",
+            "authorize_endpoint" => "http://www.example.org/authorize",
+            "token_endpoint" => "http://www.example.org/token",
+            "redirect_uri" => "http://www.example.org/callback",
+            "credentials_in_request_body" => true
+        );
         $c = new ClientConfig($data);
         $this->assertEquals("foo", $c->getClientId());
         $this->assertEquals("bar", $c->getClientSecret());
@@ -70,20 +82,50 @@ class ClientConfigTest extends \PHPUnit_Framework_TestCase
     {
         return array (
             array(
-              array ("client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token"),
+                array (
+                    "client_id" => "foo",
+                    "client_secret" => "bar",
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => "http://www.example.org/token"
+                ),
             ),
             array(
-              array ("client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token", "credentials_in_request_body" => true, "redirect_uri" => "http://www.example.org/callback"),
+                array (
+                    "client_id" => "foo",
+                    "client_secret" => "bar",
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => "http://www.example.org/token",
+                    "credentials_in_request_body" => true,
+                    "redirect_uri" => "http://www.example.org/callback"
+                ),
             ),
             array(
-              array ("foo" => "bar", "xyz" => "abc", "client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token"),
+                array (
+                    "foo" => "bar",
+                    "xyz" => "abc",
+                    "client_id" => "foo",
+                    "client_secret" => "bar",
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => "http://www.example.org/token"
+                ),
             ),
             // empty client_secret is allowed
             array(
-              array ("client_id" => "foo", "client_secret" => null, "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token"),
+                array(
+                    "client_id" => "foo",
+                    "client_secret" => null,
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => "http://www.example.org/token"
+                ),
             ),
             array(
-              array ("client_id" => "foo", "client_secret" => null, "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token", "default_token_token" => "bearer"),
+                array (
+                    "client_id" => "foo",
+                    "client_secret" => null,
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => "http://www.example.org/token",
+                    "default_token_token" => "bearer"
+                ),
             ),
         );
     }
@@ -96,7 +138,12 @@ class ClientConfigTest extends \PHPUnit_Framework_TestCase
                 "missing field 'client_id'"
             ),
             array(
-                array("client_id" => "", "client_secret" => "", "authorize_endpoint" => "", "token_endpoint" => ""),
+                array(
+                    "client_id" => "",
+                    "client_secret" => "",
+                    "authorize_endpoint" => "",
+                    "token_endpoint" => ""
+                ),
                 "client_id must be a non-empty string"
             ),
             array(
@@ -108,34 +155,68 @@ class ClientConfigTest extends \PHPUnit_Framework_TestCase
                 "missing field 'authorize_endpoint'"
             ),
             array(
-                array("client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => 5),
+                array(
+                    "client_id" => "foo",
+                    "client_secret" => "bar",
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => 5
+                ),
                 "uri must be a non-empty string"
             ),
             array(
-                array("client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "http://www.example.org/authorize"),
+                array(
+                    "client_id" => "foo",
+                    "client_secret" => "bar",
+                    "authorize_endpoint" => "http://www.example.org/authorize"
+                ),
                 "missing field 'token_endpoint'"
             ),
             array(
-                array("client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "not_a_url", "token_endpoint" => "http://www.example.org/token#foo"),
+                array(
+                    "client_id" => "foo",
+                    "client_secret" => "bar",
+                    "authorize_endpoint" => "not_a_url",
+                    "token_endpoint" => "http://www.example.org/token#foo"
+                ),
                 "uri must be valid URL"
             ),
             array(
-                array("client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token#foo"),
+                array(
+                    "client_id" => "foo",
+                    "client_secret" => "bar",
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => "http://www.example.org/token#foo"
+                ),
                 "uri must not contain a fragment"
             ),
             array(
-              array ("client_id" => "foo", "client_secret" => "∑", "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token"),
+                array (
+                    "client_id" => "foo",
+                    "client_secret" => "∑",
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => "http://www.example.org/token"
+                ),
                 "invalid characters in client_id or client_secret"
             ),
             array(
-              array ("client_id" => "foo", "client_secret" => 5, "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token"),
+                array (
+                    "client_id" => "foo",
+                    "client_secret" => 5,
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => "http://www.example.org/token"
+                ),
                 "client_secret must be a non-empty string or null"
             ),
             array(
-              array ("client_id" => "foo", "client_secret" => "bar", "authorize_endpoint" => "http://www.example.org/authorize", "token_endpoint" => "http://www.example.org/token", "default_token_type" => ''),
+                array (
+                    "client_id" => "foo",
+                    "client_secret" => "bar",
+                    "authorize_endpoint" => "http://www.example.org/authorize",
+                    "token_endpoint" => "http://www.example.org/token",
+                    "default_token_type" => ''
+                ),
                 "default_token_type must be a non-empty string or null"
             ),
-
         );
     }
 }

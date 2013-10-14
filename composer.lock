@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "672677aebd8576b634e900ea6e552649",
+    "hash": "8349727dbc98d8b02289750b570c4804",
     "packages": [
         {
             "name": "fkooman/php-oauth-lib-common",
-            "version": "0.1.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/php-oauth-lib-common.git",
-                "reference": "927f1c39eef1e47f1cc2a578f88ecf4a733054f0"
+                "reference": "3ac848a06387b73589272b02f70da8308df9c335"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-oauth-lib-common/zipball/927f1c39eef1e47f1cc2a578f88ecf4a733054f0",
-                "reference": "927f1c39eef1e47f1cc2a578f88ecf4a733054f0",
+                "url": "https://api.github.com/repos/fkooman/php-oauth-lib-common/zipball/3ac848a06387b73589272b02f70da8308df9c335",
+                "reference": "3ac848a06387b73589272b02f70da8308df9c335",
                 "shasum": ""
             },
             "require": {
@@ -40,7 +40,7 @@
                 }
             ],
             "description": "PHP library for common OAuth classes.",
-            "time": "2013-10-07 14:11:44"
+            "time": "2013-10-14 09:58:17"
         },
         {
             "name": "guzzle/guzzle",
@@ -140,12 +140,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "1.6.0"
+                "reference": "f72392d0e6eb855118f5a84e89ac2d257c704abd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1.6.0",
-                "reference": "1.6.0",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/f72392d0e6eb855118f5a84e89ac2d257c704abd",
+                "reference": "f72392d0e6eb855118f5a84e89ac2d257c704abd",
                 "shasum": ""
             },
             "require": {
@@ -201,13 +201,13 @@
             "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/php-fig/log",
-                "reference": "1.0.0"
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/php-fig/log/archive/1.0.0.zip",
-                "reference": "1.0.0",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
                 "shasum": ""
             },
             "type": "library",
@@ -236,7 +236,7 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.3.5",
+            "version": "v2.3.6",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
@@ -498,7 +498,7 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.3.5",
+            "version": "v2.3.6",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
@@ -551,7 +551,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.3.5",
+            "version": "v2.3.6",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
@@ -598,7 +598,7 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v2.3.5",
+            "version": "v2.3.6",
             "target-dir": "Symfony/Component/Finder",
             "source": {
                 "type": "git",
@@ -645,17 +645,17 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.3.5",
+            "version": "v2.3.6",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "e35e3cea61c851ece0967d8d26b926633e65535a"
+                "reference": "81191e354fe9dad0451036ccf0fdf283649d3f1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/e35e3cea61c851ece0967d8d26b926633e65535a",
-                "reference": "e35e3cea61c851ece0967d8d26b926633e65535a",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/81191e354fe9dad0451036ccf0fdf283649d3f1e",
+                "reference": "81191e354fe9dad0451036ccf0fdf283649d3f1e",
                 "shasum": ""
             },
             "require": {
@@ -688,11 +688,11 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-19 09:45:20"
+            "time": "2013-10-09 21:17:57"
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.5",
+            "version": "v2.3.6",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
@@ -791,9 +791,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "fkooman/php-oauth-lib-common": 20
+    },
     "platform": {
         "ext-openssl": "*",
         "php": ">=5.3.3"

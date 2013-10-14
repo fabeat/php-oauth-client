@@ -48,15 +48,23 @@ class RefreshToken extends Token implements TokenInterface
         return $this->refreshToken;
     }
 
-    public function isEqual(TokenInterface $token)
+    public function compareTo(TokenInterface $token)
     {
-        if (!parent::isEqual($token)) {
-            return false;
+        if (0 !== parent::compareTo($token)) {
+            return -1;
         }
-        if ($this->refreshToken !== $token->getRefreshToken()) {
-            return false;
+        if ($this->getRefreshToken() !== $token->getRefreshToken()) {
+            return -1;
         }
 
-        return true;
+        return 0;
+    }
+
+    public function toArray()
+    {
+        $toArray = parent::toArray();
+        $toArray['refresh_token'] = $this->getRefreshToken();
+
+        return $toArray;
     }
 }

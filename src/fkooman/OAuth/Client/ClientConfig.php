@@ -51,7 +51,11 @@ class ClientConfig implements ClientConfigInterface
         $redirectUri = array_key_exists('redirect_uri', $data) ? $data['redirect_uri'] : null;
         $this->setRedirectUri($redirectUri);
 
-        $credentialsInRequestBody = array_key_exists('credentials_in_request_body', $data) ? $data['credentials_in_request_body'] : false;
+        if (array_key_exists('credentials_in_request_body', $data)) {
+            $credentialsInRequestBody = $data['credentials_in_request_body'];
+        } else {
+            $credentialsInRequestBody = false;
+        }
         $this->setCredentialsInRequestBody($credentialsInRequestBody);
 
         $defaultTokenType = array_key_exists('default_token_type', $data) ? $data['default_token_type'] : null;
@@ -60,7 +64,11 @@ class ClientConfig implements ClientConfigInterface
         $allowNullExpiresIn = array_key_exists('allow_null_expires_in', $data) ? $data['allow_null_expires_in'] : false;
         $this->setAllowNullExpiresIn($allowNullExpiresIn);
 
-        $useRedirectUriOnRefreshTokenRequest = array_key_exists('use_redirect_uri_on_refresh_token_request', $data) ? $data['use_redirect_uri_on_refresh_token_request'] : false;
+        if (array_key_exists('use_redirect_uri_on_refresh_token_request', $data)) {
+            $useRedirectUriOnRefreshTokenRequest = $data['use_redirect_uri_on_refresh_token_request'];
+        } else {
+            $useRedirectUriOnRefreshTokenRequest = false;
+        }
         $this->setUseRedirectUriOnRefreshTokenRequest($useRedirectUriOnRefreshTokenRequest);
 
         $defaultServerScope = array_key_exists('default_server_scope', $data) ? $data['default_server_scope'] : null;

@@ -72,9 +72,9 @@ class Token implements TokenInterface
         return $this->userId;
     }
 
-    public function setScope(Scope $scope)
+    public function setScope(array $scope)
     {
-        $this->scope = $scope;
+        $this->scope = new Scope($scope);
     }
 
     public function getScope()
@@ -95,21 +95,31 @@ class Token implements TokenInterface
         return $this->issueTime;
     }
 
-    public function isEqual(TokenInterface $token)
+    public function compareTo(TokenInterface $token)
     {
-        if ($this->clientConfigId !== $token->getClientConfigId()) {
-            return false;
+        if ($this->getClientConfigId() !== $token->getClientConfigId()) {
+            return -1;
         }
-        if ($this->userId !== $token->getUserId()) {
-            return false;
+        if ($this->getUserId() !== $token->getUserId()) {
+            return -1;
         }
-        if (!$this->scope->isEqual($token->getScope())) {
-            return false;
+        if (0 !== $this->getScope()->compareTo($token->getScope())) {
+            return -1;
         }
-        if ($this->issueTime !== $token->getIssueTime()) {
-            return false;
+        if ($this->getIssueTime() !== $token->getIssueTime()) {
+            return -1;
         }
 
-        return true;
+        return 0;
+    }
+
+    public function toArray()
+    {
+        return array(
+            "client_config_id" => $this->getClientConfigId(),
+            "user_id" => $this->getUserId(),
+            "scope" => $this->getScope()->toArray(),
+            "issue_time" => $this->getIssueTime()
+        );
     }
 }

@@ -17,11 +17,9 @@
 
 namespace fkooman\OAuth\Client;
 
-use fkooman\OAuth\Common\Scope;
-
 use PDO;
 
-class PdoStorage implements StorageInterface
+class PdoStorage extends BaseStorage implements StorageInterface
 {
     /** @var PDO */
     private $db;
@@ -33,37 +31,23 @@ class PdoStorage implements StorageInterface
 
     public function getAccessToken($clientConfigId, Context $context)
     {
-        $stmt = $this->db->prepare("SELECT * FROM access_tokens WHERE client_config_id = :client_config_id AND user_id = :user_id");
-        $stmt->bindValue(":client_config_id", $clientConfigId, PDO::PARAM_STR);
-        $stmt->bindValue(":user_id", $context->getUserId(), PDO::PARAM_STR);
+        $stmt = $this->db->prepare(
+            'SELECT data FROM access_tokens WHERE user_id = :user_id'
+        );
+        $stmt->bindValue(':user_id', $context->getUserId(), PDO::PARAM_STR);
         $stmt->execute();
+        $this->storage['access_token'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        $resultArray = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (false !== $resultArray) {
-            foreach ($resultArray as $result) {
-                $scope = unserialize($result['scope']);
-                if ($scope->hasScope($context->getScope())) {
-                    $result['scope'] = $scope;
-
-                    return new AccessToken($result);
-                }
-            }
-        }
-
-        return false;
+        return parent::getAccessToken($clientConfigId, $context);
     }
 
     public function storeAccessToken(AccessToken $accessToken)
     {
-        $stmt = $this->db->prepare("INSERT INTO access_tokens (client_config_id, user_id, scope, access_token, token_type, expires_in, issue_time) VALUES(:client_config_id, :user_id, :scope, :access_token, :token_type, :expires_in, :issue_time)");
-        $stmt->bindValue(":client_config_id", $accessToken->getClientConfigId(), PDO::PARAM_STR);
-        $stmt->bindValue(":user_id", $accessToken->getUserId(), PDO::PARAM_STR);
-        $stmt->bindValue(":scope", serialize($accessToken->getScope()), PDO::PARAM_STR);
-        $stmt->bindValue(":access_token", $accessToken->getAccessToken(), PDO::PARAM_STR);
-        $stmt->bindValue(":token_type", $accessToken->getTokenType(), PDO::PARAM_STR);
-        $stmt->bindValue(":expires_in", $accessToken->getExpiresIn(), PDO::PARAM_INT);
-        $stmt->bindValue(":issue_time", $accessToken->getIssueTime(), PDO::PARAM_INT);
-
+        $stmt = $this->db->prepare(
+            'INSERT INTO access_tokens (user_id, data) VALUES(:user_id, :data)'
+        );
+        $stmt->bindValue(':user_id', $accessToken->getUserId(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', json_encode($accessToken->toArray()), PDO::PARAM_STR);
         $stmt->execute();
 
         return 1 === $stmt->rowCount();
@@ -71,10 +55,11 @@ class PdoStorage implements StorageInterface
 
     public function deleteAccessToken(AccessToken $accessToken)
     {
-        $stmt = $this->db->prepare("DELETE FROM access_tokens WHERE client_config_id = :client_config_id AND user_id = :user_id AND access_token = :access_token");
-        $stmt->bindValue(":client_config_id", $accessToken->getClientConfigId(), PDO::PARAM_STR);
-        $stmt->bindValue(":user_id", $accessToken->getUserId(), PDO::PARAM_STR);
-        $stmt->bindValue(":access_token", $accessToken->getAccessToken(), PDO::PARAM_STR);
+        $stmt = $this->db->prepare(
+            'DELETE FROM access_tokens WHERE user_id = :user_id AND data = :data'
+        );
+        $stmt->bindValue(':user_id', $accessToken->getUserId(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', json_encode($accessToken->toArray()), PDO::PARAM_STR);
         $stmt->execute();
 
         return 1 === $stmt->rowCount();
@@ -82,35 +67,23 @@ class PdoStorage implements StorageInterface
 
     public function getRefreshToken($clientConfigId, Context $context)
     {
-        $stmt = $this->db->prepare("SELECT * FROM refresh_tokens WHERE client_config_id = :client_config_id AND user_id = :user_id AND scope = :scope");
-        $stmt->bindValue(":client_config_id", $clientConfigId, PDO::PARAM_STR);
-        $stmt->bindValue(":user_id", $context->getUserId(), PDO::PARAM_STR);
+        $stmt = $this->db->prepare(
+            'SELECT data FROM refresh_tokens WHERE user_id = :user_id'
+        );
+        $stmt->bindValue(':user_id', $context->getUserId(), PDO::PARAM_STR);
         $stmt->execute();
+        $this->storage['refresh_token'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        $resultArray = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (false !== $resultArray) {
-            foreach ($resultArray as $result) {
-                $scope = unserialize($result['scope']);
-                if ($scope->hasScope($context->getScope())) {
-                    $result['scope'] = $scope;
-
-                    return new RefreshToken($result);
-                }
-            }
-        }
-
-        return false;
+        return parent::getRefreshToken($clientConfigId, $context);
     }
 
     public function storeRefreshToken(RefreshToken $refreshToken)
     {
-        $stmt = $this->db->prepare("INSERT INTO refresh_tokens (client_config_id, user_id, scope, refresh_token, issue_time) VALUES(:client_config_id, :user_id, :scope, :refresh_token, :issue_time)");
-        $stmt->bindValue(":client_config_id", $refreshToken->getClientConfigId(), PDO::PARAM_STR);
-        $stmt->bindValue(":user_id", $refreshToken->getUserId(), PDO::PARAM_STR);
-        $stmt->bindValue(":scope", serialize($refreshToken->getScope()), PDO::PARAM_STR);
-        $stmt->bindValue(":refresh_token", $refreshToken->getRefreshToken(), PDO::PARAM_STR);
-        $stmt->bindValue(":issue_time", $refreshToken->getIssueTime(), PDO::PARAM_INT);
-
+        $stmt = $this->db->prepare(
+            'INSERT INTO refresh_tokens (user_id, data) VALUES(:user_id, :data)'
+        );
+        $stmt->bindValue(':user_id', $refreshToken->getUserId(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', json_encode($refreshToken->toArray()), PDO::PARAM_STR);
         $stmt->execute();
 
         return 1 === $stmt->rowCount();
@@ -118,50 +91,35 @@ class PdoStorage implements StorageInterface
 
     public function deleteRefreshToken(RefreshToken $refreshToken)
     {
-        $stmt = $this->db->prepare("DELETE FROM refresh_tokens WHERE client_config_id = :client_config_id AND user_id = :user_id AND refresh_token = :refresh_token");
-        $stmt->bindValue(":client_config_id", $refreshToken->getClientConfigId(), PDO::PARAM_STR);
-        $stmt->bindValue(":user_id", $refreshToken->getUserId(), PDO::PARAM_STR);
-        $stmt->bindValue(":refresh_token", $refreshToken->getRefreshToken(), PDO::PARAM_STR);
+        $stmt = $this->db->prepare(
+            'DELETE FROM refresh_tokens WHERE user_id = :user_id AND data = :data'
+        );
+        $stmt->bindValue(':user_id', $refreshToken->getUserId(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', json_encode($refreshToken->toArray()), PDO::PARAM_STR);
         $stmt->execute();
 
         return 1 === $stmt->rowCount();
     }
 
-    public function getState($clientConfigId, $state)
+    public function getState($clientConfigId, $stateValue)
     {
-        $stmt = $this->db->prepare("SELECT * FROM states WHERE client_config_id = :client_config_id AND state = :state");
-        $stmt->bindValue(":client_config_id", $clientConfigId, PDO::PARAM_STR);
-        $stmt->bindValue(":state", $state, PDO::PARAM_STR);
+        $stmt = $this->db->prepare(
+            'SELECT data FROM states WHERE state = :state'
+        );
+        $stmt->bindValue(':state', $stateValue, PDO::PARAM_STR);
         $stmt->execute();
+        $this->storage['state'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (false !== $result) {
-            $result['scope'] = unserialize($result['scope']);
-
-            return new State($result);
-        }
-
-        return false;
+        return parent::getState($clientConfigId, $stateValue);
     }
 
     public function storeState(State $state)
     {
-        $stmt = $this->db->prepare("INSERT INTO states (client_config_id, user_id, scope, issue_time, state) VALUES(:client_config_id, :user_id, :scope, :issue_time, :state)");
-        $stmt->bindValue(":client_config_id", $state->getClientConfigId(), PDO::PARAM_STR);
-        $stmt->bindValue(":user_id", $state->getUserId(), PDO::PARAM_STR);
-        $stmt->bindValue(":scope", serialize($state->getScope()), PDO::PARAM_STR);
-        $stmt->bindValue(":issue_time", $state->getIssueTime(), PDO::PARAM_INT);
-        $stmt->bindValue(":state", $state->getState(), PDO::PARAM_STR);
-        $stmt->execute();
-
-        return 1 === $stmt->rowCount();
-    }
-
-    public function deleteStateForContext($clientConfigId, Context $context)
-    {
-        $stmt = $this->db->prepare("DELETE FROM states WHERE client_config_id = :client_config_id AND user_id = :user_id");
-        $stmt->bindValue(":client_config_id", $clientConfigId, PDO::PARAM_STR);
-        $stmt->bindValue(":user_id", $context->getUserId(), PDO::PARAM_STR);
+        $stmt = $this->db->prepare(
+            'INSERT INTO states (user_id, data) VALUES(:user_id, :data)'
+        );
+        $stmt->bindValue(':user_id', $state->getUserId(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', json_encode($state->toArray()), PDO::PARAM_STR);
         $stmt->execute();
 
         return 1 === $stmt->rowCount();
@@ -169,9 +127,11 @@ class PdoStorage implements StorageInterface
 
     public function deleteState(State $state)
     {
-        $stmt = $this->db->prepare("DELETE FROM states WHERE client_config_id = :client_config_id AND state = :state");
-        $stmt->bindValue(":client_config_id", $state->getClientConfigId(), PDO::PARAM_STR);
-        $stmt->bindValue(":state", $state->getState(), PDO::PARAM_STR);
+        $stmt = $this->db->prepare(
+            'DELETE FROM states WHERE user_id = :user_id AND data = :data'
+        );
+        $stmt->bindValue(':user_id', $state->getUserId(), PDO::PARAM_STR);
+        $stmt->bindValue(':data', json_encode($state->toArray()), PDO::PARAM_STR);
         $stmt->execute();
 
         return 1 === $stmt->rowCount();

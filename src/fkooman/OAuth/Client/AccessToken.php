@@ -89,21 +89,31 @@ class AccessToken extends Token implements TokenInterface
         return $this->expiresIn;
     }
 
-    public function isEqual(TokenInterface $token)
+    public function compareTo(TokenInterface $token)
     {
-        if (!parent::isEqual($token)) {
-            return false;
+        if (0 !== parent::compareTo($token)) {
+            return -1;
         }
-        if ($this->accessToken !== $token->getAccessToken()) {
-            return false;
+        if ($this->getAccessToken() !== $token->getAccessToken()) {
+            return -1;
         }
-        if ($this->tokenType !== $token->getTokenType()) {
-            return false;
+        if ($this->getTokenType() !== $token->getTokenType()) {
+            return -1;
         }
-        if ($this->expiresIn !== $token->getExpiresIn()) {
-            return false;
+        if ($this->getExpiresIn() !== $token->getExpiresIn()) {
+            return -1;
         }
 
-        return true;
+        return 0;
+    }
+
+    public function toArray()
+    {
+        $toArray = parent::toArray();
+        $toArray['access_token'] = $this->getAccessToken();
+        $toArray['token_type'] = $this->getTokenType();
+        $toArray['expires_in'] = $this->getExpiresIn();
+
+        return $toArray;
     }
 }

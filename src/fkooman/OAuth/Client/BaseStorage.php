@@ -19,6 +19,7 @@ namespace fkooman\OAuth\Client;
 
 class BaseStorage implements StorageInterface
 {
+    /** @var array */
     protected $storage;
 
     public function __construct()
@@ -33,7 +34,7 @@ class BaseStorage implements StorageInterface
     public function getAccessToken($clientConfigId, Context $context)
     {
         foreach ($this->storage['access_token'] as $t) {
-            $token = unserialize($t);
+            $token = new AccessToken(json_decode($t, true));
             if ($clientConfigId !== $token->getClientConfigId()) {
                 continue;
             }
@@ -52,7 +53,7 @@ class BaseStorage implements StorageInterface
 
     public function storeAccessToken(AccessToken $accessToken)
     {
-        array_push($this->storage['access_token'], serialize($accessToken));
+        array_push($this->storage['access_token'], json_encode($accessToken->toArray()));
 
         return true;
     }
@@ -60,8 +61,8 @@ class BaseStorage implements StorageInterface
     public function deleteAccessToken(AccessToken $accessToken)
     {
         foreach ($this->storage['access_token'] as $k => $t) {
-            $token = unserialize($t);
-            if (!$token->isEqual($accessToken)) {
+            $token = new AccessToken(json_decode($t, true));
+            if (0 !== $token->compareTo($accessToken)) {
                 continue;
             }
             unset($this->storage['access_token'][$k]);
@@ -75,7 +76,7 @@ class BaseStorage implements StorageInterface
     public function getRefreshToken($clientConfigId, Context $context)
     {
         foreach ($this->storage['refresh_token'] as $t) {
-            $token = unserialize($t);
+            $token = new RefreshToken(json_decode($t, true));
             if ($clientConfigId !== $token->getClientConfigId()) {
                 continue;
             }
@@ -94,7 +95,7 @@ class BaseStorage implements StorageInterface
 
     public function storeRefreshToken(RefreshToken $refreshToken)
     {
-        array_push($this->storage['refresh_token'], serialize($refreshToken));
+        array_push($this->storage['refresh_token'], json_encode($refreshToken->toArray()));
 
         return true;
     }
@@ -102,8 +103,8 @@ class BaseStorage implements StorageInterface
     public function deleteRefreshToken(RefreshToken $refreshToken)
     {
         foreach ($this->storage['refresh_token'] as $k => $t) {
-            $token = unserialize($t);
-            if (!$token->isEqual($refreshToken)) {
+            $token = new RefreshToken(json_decode($t, true));
+            if (0 !== $token->compareTo($refreshToken)) {
                 continue;
             }
             unset($this->storage['refresh_token'][$k]);
@@ -114,19 +115,18 @@ class BaseStorage implements StorageInterface
         return false;
     }
 
-    public function getState($clientConfigId, $state)
+    public function getState($clientConfigId, $stateValue)
     {
-        foreach ($this->storage['state'] as $s) {
-            $sessionState = unserialize($s);
-
-            if ($clientConfigId !== $sessionState->getClientConfigId()) {
+        foreach ($this->storage['state'] as $t) {
+            $token = new State(json_decode($t, true));
+            if ($clientConfigId !== $token->getClientConfigId()) {
                 continue;
             }
-            if ($state !== $sessionState->getState()) {
+            if ($token->getState() !== $stateValue) {
                 continue;
             }
 
-            return $sessionState;
+            return $token;
         }
 
         return false;
@@ -134,34 +134,16 @@ class BaseStorage implements StorageInterface
 
     public function storeState(State $state)
     {
-        array_push($this->storage['state'], serialize($state));
+        array_push($this->storage['state'], json_encode($state->toArray()));
 
         return true;
     }
 
-    public function deleteStateForContext($clientConfigId, Context $context)
-    {
-        foreach ($this->storage['state'] as $k => $s) {
-            $state = unserialize($s);
-            if ($clientConfigId !== $state->getClientConfigId()) {
-                continue;
-            }
-            if ($context->getUserId() !== $state->getUserId()) {
-                continue;
-            }
-            unset($this->storage['state'][$k]);
-
-            return true;
-        }
-
-        return false;
-    }
-
     public function deleteState(State $state)
     {
-        foreach ($this->storage['state'] as $k => $s) {
-            $sessionState = unserialize($s);
-            if (!$sessionState->isEqual($state)) {
+        foreach ($this->storage['state'] as $k => $t) {
+            $token = new State(json_decode($t, true));
+            if (0 !== $token->compareTo($state)) {
                 continue;
             }
             unset($this->storage['state'][$k]);

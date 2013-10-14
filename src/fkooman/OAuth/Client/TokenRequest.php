@@ -17,6 +17,8 @@
 
 namespace fkooman\OAuth\Client;
 
+use Guzzle\Plugin\CurlAuth\CurlAuthPlugin;
+
 class TokenRequest
 {
     /** @var \Guzzle\Http\Client */
@@ -70,7 +72,10 @@ class TokenRequest
             $p['client_secret'] = $this->clientConfig->getClientSecret();
         } else {
             // use basic authentication
-            $curlAuth = new \Guzzle\Plugin\CurlAuth\CurlAuthPlugin($this->clientConfig->getClientId(), $this->clientConfig->getClientSecret());
+            $curlAuth = new CurlAuthPlugin(
+                $this->clientConfig->getClientId(),
+                $this->clientConfig->getClientSecret()
+            );
             $this->c->addSubscriber($curlAuth);
         }
 

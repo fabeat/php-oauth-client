@@ -18,6 +18,7 @@
 namespace fkooman\OAuth\Client;
 
 use fkooman\OAuth\Common\Scope;
+use Guzzle\Http\Client;
 
 /**
  * API for talking to OAuth 2.0 protected resources.
@@ -33,8 +34,12 @@ class Api
     private $tokenStorage;
     private $httpClient;
 
-    public function __construct($clientConfigId, ClientConfigInterface $clientConfig, StorageInterface $tokenStorage, \Guzzle\Http\Client $httpClient)
-    {
+    public function __construct(
+        $clientConfigId,
+        ClientConfigInterface $clientConfig,
+        StorageInterface $tokenStorage,
+        Client $httpClient
+    ) {
         $this->setClientConfigId($clientConfigId);
         $this->setClientConfig($clientConfig);
         $this->setTokenStorage($tokenStorage);
@@ -105,7 +110,7 @@ class Api
                 $scope = $context->getScope();
             } else {
                 // the scope we got should be a superset of what we requested
-                $scope = $tokenResponse->getScope();
+                $scope = new Scope(implode(" ", $tokenResponse->getScope()));
                 if (!$scope->hasScope($context->getScope())) {
                     // we didn't get the scope we requested, stop for now
                     // FIXME: we need to implement a way to request certain
@@ -119,7 +124,7 @@ class Api
                 array(
                     "client_config_id" => $this->clientConfigId,
                     "user_id" => $context->getUserId(),
-                    "scope" => $scope,
+                    "scope" => $scope->toArray(),
                     "access_token" => $tokenResponse->getAccessToken(),
                     "token_type" => $tokenResponse->getTokenType(),
                     "issue_time" => time(),
@@ -134,7 +139,7 @@ class Api
                     array(
                         "client_config_id" => $this->clientConfigId,
                         "user_id" => $context->getUserId(),
-                        "scope" => $scope,
+                        "scope" => $scope->toArray(),
                         "refresh_token" => $tokenResponse->getRefreshToken(),
                         "issue_time" => time()
                     )
@@ -177,12 +182,11 @@ class Api
         }
 
         // try to get a new access token
-        $this->tokenStorage->deleteStateForContext($this->clientConfigId, $context);
         $state = new State(
             array(
                 "client_config_id" => $this->clientConfigId,
                 "user_id" => $context->getUserId(),
-                "scope" => $context->getScope(),
+                "scope" => $context->getScope()->toArray(),
                 "issue_time" => time(),
                 "state" => $stateValue
             )
@@ -200,7 +204,7 @@ class Api
         // scope
         $contextScope = $context->getScope();
         if (!$contextScope->isEmpty()) {
-            $q['scope'] = $contextScope->getScopeAsString();
+            $q['scope'] = $contextScope->toString();
         }
 
         // redirect_uri

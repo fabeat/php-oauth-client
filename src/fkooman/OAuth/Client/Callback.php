@@ -17,6 +17,8 @@
 
 namespace fkooman\OAuth\Client;
 
+use Guzzle\Http\Client;
+
 class Callback
 {
     private $clientConfigId;
@@ -24,8 +26,12 @@ class Callback
     private $tokenStorage;
     private $httpClient;
 
-    public function __construct($clientConfigId, ClientConfigInterface $clientConfig, StorageInterface $tokenStorage, \Guzzle\Http\Client $httpClient)
-    {
+    public function __construct(
+        $clientConfigId,
+        ClientConfigInterface $clientConfig,
+        StorageInterface $tokenStorage,
+        Client $httpClient
+    ) {
         $this->setClientConfigId($clientConfigId);
         $this->setClientConfig($clientConfig);
         $this->setTokenStorage($tokenStorage);
@@ -97,7 +103,7 @@ class Callback
                 $scope = $state->getScope();
             } else {
                 // the scope we got should be a superset of what we requested
-                $scope = $tokenResponse->getScope();
+                $scope = new Scope(explode(" ", $tokenResponse->getScope()));
                 if (!$scope->hasScope($state->getScope())) {
                     // we didn't get the scope we requested, stop for now
                     // FIXME: we need to implement a way to request certain
@@ -112,7 +118,7 @@ class Callback
                 array(
                     "client_config_id" => $this->clientConfigId,
                     "user_id" => $state->getUserId(),
-                    "scope" => $scope,
+                    "scope" => $scope->toArray(),
                     "access_token" => $tokenResponse->getAccessToken(),
                     "token_type" => $tokenResponse->getTokenType(),
                     "issue_time" => time(),
@@ -128,7 +134,7 @@ class Callback
                     array(
                         "client_config_id" => $this->clientConfigId,
                         "user_id" => $state->getUserId(),
-                        "scope" => $scope,
+                        "scope" => $scope->toArray(),
                         "refresh_token" => $tokenResponse->getRefreshToken(),
                         "issue_time" => time()
                     )

@@ -21,10 +21,19 @@ use fkooman\OAuth\Common\Scope;
 
 class TokenResponse
 {
+    /** @var string */
     private $accessToken;
+
+    /** @var string */
     private $tokenType;
+
+    /** @var int */
     private $expiresIn;
+
+    /** @var string */
     private $refreshToken;
+
+    /** @var string */
     private $scope;
 
     public function __construct(array $data)
@@ -108,7 +117,7 @@ class TokenResponse
         if (!is_string($scope) || 0 >= strlen($scope)) {
             throw new TokenResponseException("scope needs to be a non-empty string");
         }
-        $this->scope = new Scope($scope);
+        $this->scope = $scope;
     }
 
     public function getScope()

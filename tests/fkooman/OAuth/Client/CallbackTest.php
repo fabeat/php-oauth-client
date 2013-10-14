@@ -42,7 +42,7 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testXYZ()
+    public function testCallback()
     {
         $client = new Client();
         $mock = new MockPlugin();
@@ -69,7 +69,7 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
                 "client_config_id" => "foo",
                 "issue_time" => time() - 100,
                 "user_id" => "my_user_id",
-                "scope" => new Scope("foo bar")
+                "scope" => array("foo", "bar")
             )
         );
         $baseStorage->storeState($state);

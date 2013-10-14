@@ -48,15 +48,23 @@ class State extends Token implements TokenInterface
         return $this->state;
     }
 
-    public function isEqual(TokenInterface $state)
+    public function compareTo(TokenInterface $state)
     {
-        if (!parent::isEqual($state)) {
-            return false;
+        if (0 !== parent::compareTo($state)) {
+            return -1;
         }
-        if ($this->state !== $state->getState()) {
-            return false;
+        if ($this->getState() !== $state->getState()) {
+            return -1;
         }
 
-        return true;
+        return 0;
+    }
+
+    public function toArray()
+    {
+        $toArray = parent::toArray();
+        $toArray['state'] = $this->getState();
+
+        return $toArray;
     }
 }

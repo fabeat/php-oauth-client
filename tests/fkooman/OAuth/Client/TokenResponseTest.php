@@ -29,7 +29,7 @@ class TokenResponseTest extends \PHPUnit_Framework_TestCase
                 "access_token" => "foo",
                 "token_type" => "Bearer",
                 "expires_in" => 5,
-                "scope" => "foo",
+                "scope" => "foo bar",
                 "refresh_token" => "bar",
                 "unsupported_key" => "foo",
             )
@@ -38,20 +38,7 @@ class TokenResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("Bearer", $t->getTokenType());
         $this->assertEquals(5, $t->getExpiresIn());
         $this->assertEquals("bar", $t->getRefreshToken());
-        $this->assertTrue($t->getScope()->isEqual(new Scope("foo")));
-    }
-
-    public function testScope()
-    {
-        $t = new TokenResponse(
-            array(
-                "access_token" => "foo",
-                "token_type" => "Bearer",
-                "scope" => "foo bar baz baz",
-            )
-        );
-        // scope will be sorted de-duplicated string space separated
-        $this->assertTrue($t->getScope()->isEqual(new Scope("bar baz foo")));
+        $this->assertEquals("foo bar", $t->getScope());
     }
 
     /**
@@ -97,6 +84,5 @@ class TokenResponseTest extends \PHPUnit_Framework_TestCase
                 "expires_in" => -5,
             )
         );
-
     }
 }
