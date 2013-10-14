@@ -16,12 +16,9 @@
     "name": "fkooman/php-oauth-client",
     "require": {
         "ext-openssl": "*",
-        "fkooman/php-oauth-lib-common": "dev-master",
+        "fkooman/php-oauth-lib-common": "0.2.*",
         "guzzle/guzzle": "3.7.*",
         "monolog/monolog": "1.6.*",
         "php": ">=5.3.3"
-    },
-    "require-dev": {
-        "sami/sami": "v1.1"
     }
 }
