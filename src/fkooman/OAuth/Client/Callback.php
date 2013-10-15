@@ -62,7 +62,18 @@ class Callback
         $this->httpClient = $httpClient;
     }
 
-    public function handleCallback(array $query)
+    private function validateState(Context $context, $stateValue)
+    {
+        $contextStates = $this->tokenStorage->getState($this->clientConfigId, $context);
+        foreach ($contextStates as $state) {
+            if ($stateValue === $state->getState()) {
+                return $state;
+            }
+        }
+        throw new CallbackException("state not found");
+    }
+
+    public function handleCallback(array $query, Context $context)
     {
         $qState = isset($query['state']) ? $query['state'] : null;
         $qCode = isset($query['code']) ? $query['code'] : null;
@@ -72,10 +83,7 @@ class Callback
         if (null === $qState) {
             throw new CallbackException("state parameter missing");
         }
-        $state = $this->tokenStorage->getState($this->clientConfigId, $qState);
-        if (false === $state) {
-            throw new CallbackException("state not found");
-        }
+        $state = $this->validateState($context, $qState);
 
         // avoid race condition for state by really needing a confirmation
         // that it was deleted

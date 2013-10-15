@@ -71,14 +71,19 @@ class Api
 
     public function getRefreshToken(Context $context)
     {
-        return $this->tokenStorage->getRefreshToken($this->clientConfigId, $context);
+        $contextRefreshTokens = $this->tokenStorage->getRefreshToken($this->clientConfigId, $context);
+        if (0 === count($contextRefreshTokens)) {
+            return false;
+        }
+
+        return $contextRefreshTokens[0];
     }
 
     public function getAccessToken(Context $context)
     {
         // do we have a valid access token?
-        $accessToken = $this->tokenStorage->getAccessToken($this->clientConfigId, $context);
-        if (false !== $accessToken) {
+        $contextAccessTokens = $this->tokenStorage->getAccessToken($this->clientConfigId, $context);
+        foreach ($contextAccessTokens as $accessToken) {
             if (null === $accessToken->getExpiresIn()) {
                 // no expiry set, assume always valid
                 return $accessToken;

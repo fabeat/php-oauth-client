@@ -28,6 +28,6 @@ interface StorageInterface
     public function deleteRefreshToken(RefreshToken $refreshToken);
 
     public function storeState(State $state);
-    public function getState($clientConfigId, $stateValue);
+    public function getState($clientConfigId, Context $context);
     public function deleteState(State $state);
 }

@@ -80,7 +80,8 @@ class CallbackTest extends \PHPUnit_Framework_TestCase
             array(
                 "state" => "my_state",
                 "code" => "my_code"
-            )
+            ),
+            new Context("my_user_id", array("foo", "bar"))
         );
 
         $this->assertEquals("my_access_token", $tokenResponse->getAccessToken());

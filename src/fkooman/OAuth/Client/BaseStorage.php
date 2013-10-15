@@ -33,6 +33,8 @@ class BaseStorage implements StorageInterface
 
     public function getAccessToken($clientConfigId, Context $context)
     {
+        $returnTokens = array();
+
         foreach ($this->storage['access_token'] as $t) {
             $token = new AccessToken(json_decode($t, true));
             if ($clientConfigId !== $token->getClientConfigId()) {
@@ -44,16 +46,15 @@ class BaseStorage implements StorageInterface
             if (!$token->getScope()->hasScope($context->getScope())) {
                 continue;
             }
-
-            return $token;
+            $returnTokens[] = $token;
         }
 
-        return false;
+        return $returnTokens;
     }
 
     public function storeAccessToken(AccessToken $accessToken)
     {
-        array_push($this->storage['access_token'], json_encode($accessToken->toArray()));
+        $this->storage['access_token'][] = json_encode($accessToken->toArray());
 
         return true;
     }
@@ -75,6 +76,8 @@ class BaseStorage implements StorageInterface
 
     public function getRefreshToken($clientConfigId, Context $context)
     {
+        $returnTokens = array();
+
         foreach ($this->storage['refresh_token'] as $t) {
             $token = new RefreshToken(json_decode($t, true));
             if ($clientConfigId !== $token->getClientConfigId()) {
@@ -86,16 +89,15 @@ class BaseStorage implements StorageInterface
             if (!$token->getScope()->hasScope($context->getScope())) {
                 continue;
             }
-
-            return $token;
+            $returnTokens[] = $token;
         }
 
-        return false;
+        return $returnTokens;
     }
 
     public function storeRefreshToken(RefreshToken $refreshToken)
     {
-        array_push($this->storage['refresh_token'], json_encode($refreshToken->toArray()));
+        $this->storage['refresh_token'][] = json_encode($refreshToken->toArray());
 
         return true;
     }
@@ -115,26 +117,31 @@ class BaseStorage implements StorageInterface
         return false;
     }
 
-    public function getState($clientConfigId, $stateValue)
+    public function getState($clientConfigId, Context $context)
     {
+        $returnTokens = array();
+
         foreach ($this->storage['state'] as $t) {
             $token = new State(json_decode($t, true));
             if ($clientConfigId !== $token->getClientConfigId()) {
                 continue;
             }
-            if ($token->getState() !== $stateValue) {
+            if ($context->getUserId() !== $token->getUserId()) {
+                continue;
+            }
+            if (!$token->getScope()->hasScope($context->getScope())) {
                 continue;
             }
 
-            return $token;
+            $returnTokens[] = $token;
         }
 
-        return false;
+        return $returnTokens;
     }
 
     public function storeState(State $state)
     {
-        array_push($this->storage['state'], json_encode($state->toArray()));
+        $this->storage['state'][] = json_encode($state->toArray());
 
         return true;
     }

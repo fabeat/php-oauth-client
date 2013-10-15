@@ -109,25 +109,34 @@ class BaseStorageTest extends \PHPUnit_Framework_TestCase
     public function testGetExistingAccessToken()
     {
         $accessToken = $this->s->getAccessToken('foo_client', new Context("foo@example.org", array("foo", "bar")));
-        $this->assertEquals(0, $accessToken->getScope()->compareTo(new Scope(array('foo', 'bar'))));
-        $this->assertEquals("bearer", $accessToken->getTokenType());
-        $this->assertEquals("foo_access_token_value", $accessToken->getAccessToken());
+        $this->assertEquals(0, $accessToken[0]->getScope()->compareTo(new Scope(array('foo', 'bar'))));
+        $this->assertEquals("bearer", $accessToken[0]->getTokenType());
+        $this->assertEquals("foo_access_token_value", $accessToken[0]->getAccessToken());
     }
 
     public function testGetNonExistingAccessToken()
     {
-        $this->assertFalse($this->s->getAccessToken('foo_client', new Context("foo@example.org", array("foo", "baz"))));
-        $this->assertFalse($this->s->getAccessToken('foo_client', new Context("na@example.org", array("foo", "bar"))));
-        $this->assertFalse($this->s->getAccessToken('baz_client', new Context("foo@example.org", array("foo", "bar"))));
+        $this->assertEquals(
+            array(),
+            $this->s->getAccessToken('foo_client', new Context("foo@example.org", array("foo", "baz")))
+        );
+        $this->assertEquals(
+            array(),
+            $this->s->getAccessToken('foo_client', new Context("na@example.org", array("foo", "bar")))
+        );
+        $this->assertEquals(
+            array(),
+            $this->s->getAccessToken('baz_client', new Context("foo@example.org", array("foo", "bar")))
+        );
     }
 
     public function testDeleteAccessToken()
     {
         $accessToken = $this->s->getAccessToken('foo_client', new Context("foo@example.org", array("foo", "bar")));
-        $this->assertInstanceOf('fkooman\OAuth\Client\AccessToken', $accessToken);
-        $this->assertTrue($this->s->deleteAccessToken($accessToken));
+        $this->assertInstanceOf('fkooman\OAuth\Client\AccessToken', $accessToken[0]);
+        $this->assertTrue($this->s->deleteAccessToken($accessToken[0]));
         $accessToken = $this->s->getAccessToken('foo_client', new Context("foo@example.org", array("foo", "bar")));
-        $this->assertFalse($accessToken);
+        $this->assertEquals(array(), $accessToken);
     }
 
     public function testDeleteNonExistingAccessToken()
@@ -152,13 +161,14 @@ class BaseStorageTest extends \PHPUnit_Framework_TestCase
     public function testGetExistingRefreshToken()
     {
         $refreshToken = $this->s->getRefreshToken('foo_client', new Context("foo@example.org", array("foo", "bar")));
-        $this->assertEquals(0, $refreshToken->getScope()->compareTo(new Scope(array("foo", "bar"))));
-        $this->assertEquals("refresh_token_value", $refreshToken->getRefreshToken());
+        $this->assertEquals(0, $refreshToken[0]->getScope()->compareTo(new Scope(array("foo", "bar"))));
+        $this->assertEquals("refresh_token_value", $refreshToken[0]->getRefreshToken());
     }
 
     public function testGetNonExistingRefreshToken()
     {
-        $this->assertFalse(
+        $this->assertEquals(
+            array(),
             $this->s->getRefreshToken(
                 'foo_client',
                 new Context("foo@example.org", array("foo", "baz"))
@@ -169,9 +179,9 @@ class BaseStorageTest extends \PHPUnit_Framework_TestCase
     public function testDeleteRefreshToken()
     {
         $refreshToken = $this->s->getRefreshToken('foo_client', new Context("foo@example.org", array("foo", "bar")));
-        $this->assertInstanceOf('fkooman\OAuth\Client\RefreshToken', $refreshToken);
-        $this->assertTrue($this->s->deleteRefreshToken($refreshToken));
+        $this->assertInstanceOf('fkooman\OAuth\Client\RefreshToken', $refreshToken[0]);
+        $this->assertTrue($this->s->deleteRefreshToken($refreshToken[0]));
         $refreshToken = $this->s->getRefreshToken('foo_client', new Context("foo@example.org", array("foo", "bar")));
-        $this->assertFalse($refreshToken);
+        $this->assertEquals(array(), $refreshToken);
     }
 }
