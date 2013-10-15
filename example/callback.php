@@ -22,7 +22,15 @@ try {
     $tokenStorage = new SessionStorage();
     $httpClient = new Client();
     $cb = new Callback("foo", $clientConfig, $tokenStorage, $httpClient);
-    $cb->handleCallback($_GET);
+
+    $context = new Context(
+        "john.doe@example.org",
+        array(
+            "authorizations"
+        )
+    );
+
+    $cb->handleCallback($_GET, $context);
 
     header("HTTP/1.1 302 Found");
     header("Location: http://localhost/php-oauth-client-example/index.php");

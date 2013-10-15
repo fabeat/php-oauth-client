@@ -27,7 +27,12 @@ $tokenStorage = new SessionStorage();
 $httpClient = new Client();
 $api = new Api("foo", $clientConfig, $tokenStorage, $httpClient);
 
-$context = new Context("john.doe@example.org", "authorizations");
+$context = new Context(
+    "john.doe@example.org",
+    array(
+        "authorizations"
+    )
+);
 
 $accessToken = $api->getAccessToken($context);
 if (false === $accessToken) {
