@@ -22,14 +22,12 @@ try {
     $tokenStorage = new SessionStorage();
     $httpClient = new Client();
     $cb = new Callback("foo", $clientConfig, $tokenStorage, $httpClient);
-
     $context = new Context(
         "john.doe@example.org",
         array(
             "authorizations"
         )
     );
-
     $cb->handleCallback($_GET, $context);
 
     header("HTTP/1.1 302 Found");

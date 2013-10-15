@@ -148,7 +148,12 @@ Before you can call these methods you need to create a `Context` object to
 specify for which user you are requesting this access token and what the scope 
 is you want to request at the authorization server.
 
-    $context = new Context("john.doe@example.org", "read");
+    $context = new Context(
+        "john.doe@example.org",
+        array(
+            "read"
+        )
+    );
     
 This means that you will request a token bound to `john.doe@example.org` with 
 the scope `read`. The user you specify here is typically the user identifier 
@@ -156,9 +161,9 @@ you use in *your* application that wants to integrate with the OAuth 2.0
 protected resource. At your service the user can for example be 
 `john.doe@example.org`. This identifier is in no way related to the identity
 of the user at the remote service, it is just used for book keeping the 
-access tokens. The scope parameter is either a string containing space 
-separated scope values, or an array containing the scopes. If you do not want 
-to request any particular scope you can use `''` or `array()`. 
+access tokens. The scope parameter is an array containing the scopes. If you do 
+not want to request any particular scope you can use `array()` or omit the 
+parameter.
 
 Now you can see if an access token is already available:
 
@@ -236,7 +241,13 @@ contents of this file are assumed to be in `callback.php`.
 
     try {
         $cb = new Callback("foo", $clientConfig, new SessionStorage(), new \Guzzle\Http\Client());
-        $cb->handleCallback($_GET);
+        $context = new Context(
+            "john.doe@example.org",
+            array(
+                "read"
+            )
+        );
+        $cb->handleCallback($_GET, $context);
 
         header("HTTP/1.1 302 Found");
         header("Location: http://www.example.org/index.php");
@@ -245,7 +256,7 @@ contents of this file are assumed to be in `callback.php`.
         // specific error message for the client, e.g.: the user did not authorize 
         // the request
         echo sprintf("ERROR: %s, DESCRIPTION: %s", $e->getMessage(), $e->getDescription());
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         // other error, these should never occur in the normal flow
         echo sprintf("ERROR: %s", $e->getMessage());
     }
@@ -304,15 +315,6 @@ You can use the following snippet:
 
 Now you can feed the `$httpClient` to the `Api` and `Callback` classes and the
 requests and responses including their bodies will be logged.
-
-# API
-The API documenation can be generated using
-[Sami](http://sami.sensiolabs.org/), Sami is part of the `require-dev` section
-in the Composer file.
-
-    $ php vendor/bin/sami.php update doc/php-oauth-client.php
-
-This will output HTML in the `build/` directory.
 
 # Tests
 In order to run the tests you can use [PHPUnit](http://phpunit.de). You can run 
