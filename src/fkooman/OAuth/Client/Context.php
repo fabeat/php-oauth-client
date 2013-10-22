@@ -22,15 +22,47 @@ use fkooman\OAuth\Common\Scope;
 class Context
 {
     /** @var string */
+    private $clientConfigId;
+
+    /** @var string */
     private $userId;
 
     /** @var fkooman\OAuth\Common\Scope */
     private $scope;
 
-    public function __construct($userId, array $scope)
+    public function __construct($clientConfigId, $userId, array $scope = array())
     {
+        $this->setClientConfigId($clientConfigId);
         $this->setUserId($userId);
         $this->setScope($scope);
+    }
+
+    public static function fromArray(array $data)
+    {
+        foreach (array('client_config_id', 'user_id', 'scope') as $key) {
+            if (!array_key_exists($key, $data)) {
+                throw new TokenException(sprintf("missing field '%s'", $key));
+            }
+        }
+
+        return new self(
+            $data['client_config_id'],
+            $data['user_id'],
+            $data['scope']
+        );
+    }
+
+    public function setClientConfigId($clientConfigId)
+    {
+        if (!is_string($clientConfigId) || 0 >= strlen($clientConfigId)) {
+            throw new ContextException("clientConfigId needs to be a non-empty string");
+        }
+        $this->clientConfigId = $clientConfigId;
+    }
+
+    public function getClientConfigId()
+    {
+        return $this->clientConfigId;
     }
 
     public function setUserId($userId)
@@ -54,5 +86,14 @@ class Context
     public function getScope()
     {
         return $this->scope;
+    }
+
+    public function toArray()
+    {
+        return array(
+            "client_config_id" => $this->getClientConfigId(),
+            "user_id" => $this->getUserId(),
+            "scope" => $this->getScope()->toArray()
+        );
     }
 }
