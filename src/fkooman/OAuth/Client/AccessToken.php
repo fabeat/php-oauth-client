@@ -17,36 +17,32 @@
 
 namespace fkooman\OAuth\Client;
 
-class AccessToken extends Token implements TokenInterface
+class AccessToken extends Token
 {
-    /** access_token VARCHAR(255) NOT NULL */
+    /** @var string */
     private $accessToken;
 
-    /** token_type VARCHAR(255) NOT NULL */
+    /** @var string */
     private $tokenType;
 
-    /** expires_in INTEGER DEFAULT NULL */
+    /** @var int */
     private $expiresIn;
 
-    public function __construct(array $data)
+    public function __construct($issueTime, $accessToken, $tokenType, $expiresIn = null)
     {
-        parent::__construct($data);
-
-        foreach (array('token_type', 'access_token') as $key) {
-            if (!array_key_exists($key, $data)) {
-                throw new TokenException(sprintf("missing field '%s'", $key));
-            }
-        }
-        $this->setAccessToken($data['access_token']);
-        $this->setTokenType($data['token_type']);
-        $expiresIn = array_key_exists('expires_in', $data) ? $data['expires_in'] : null;
+        $this->setIssueTime($issueTime);
+        $this->setAccessToken($accessToken);
+        $this->setTokenType($tokenType);
         $this->setExpiresIn($expiresIn);
     }
 
     public function setAccessToken($accessToken)
     {
-        if (!is_string($accessToken) || 0 >= strlen($accessToken)) {
-            throw new TokenException("access_token needs to be a non-empty string");
+        if (!is_string($accessToken)) {
+            throw new TokenException("access_token needs to be a string");
+        }
+        if (0 >= strlen($accessToken)) {
+            throw new TokenException("access_token needs to be non-empty");
         }
         $this->accessToken = $accessToken;
     }
@@ -58,12 +54,15 @@ class AccessToken extends Token implements TokenInterface
 
     public function setTokenType($tokenType)
     {
-        if (!is_string($tokenType) || 0 >= strlen($tokenType)) {
-            throw new TokenException("token_type needs to be a non-empty string");
+        if (!is_string($tokenType)) {
+            throw new TokenException("token_type needs to be a string");
+        }
+        if (0 >= strlen($tokenType)) {
+            throw new TokenException("token_type needs to be non-empty");
         }
         // Google uses "Bearer" instead of "bearer", so we need to lowercase it...
         if (!in_array(strtolower($tokenType), array("bearer"))) {
-            throw new TokenException(sprintf("unsupported token type '%s'", $tokenType));
+            throw new TokenException("unsupported token type");
         }
         $this->tokenType = $tokenType;
     }
@@ -76,10 +75,12 @@ class AccessToken extends Token implements TokenInterface
     public function setExpiresIn($expiresIn)
     {
         if (null !== $expiresIn) {
-            if (!is_numeric($expiresIn) || 0 >= $expiresIn) {
-                throw new TokenException("expires_in should be positive integer or null");
+            if (!is_int($expiresIn)) {
+                throw new TokenException("expires_in should be an integer");
             }
-            $expiresIn = (int) $expiresIn;
+            if (0 >= $expiresIn) {
+                throw new TokenException("expires_in should be positive");
+            }
         }
         $this->expiresIn = $expiresIn;
     }
@@ -89,31 +90,52 @@ class AccessToken extends Token implements TokenInterface
         return $this->expiresIn;
     }
 
-    public function compareTo(TokenInterface $token)
+    public function equals(AccessToken $that)
     {
-        if (0 !== parent::compareTo($token)) {
-            return -1;
+        if ($this->getIssueTime() !== $that->getIssueTime()) {
+            return false;
         }
-        if ($this->getAccessToken() !== $token->getAccessToken()) {
-            return -1;
+        if ($this->getAccessToken() !== $that->getAccessToken()) {
+            return false;
         }
-        if ($this->getTokenType() !== $token->getTokenType()) {
-            return -1;
+        if ($this->getTokenType() !== $that->getTokenType()) {
+            return false;
         }
-        if ($this->getExpiresIn() !== $token->getExpiresIn()) {
-            return -1;
+        if ($this->getExpiresIn() !== $that->getExpiresIn()) {
+            return false;
         }
 
-        return 0;
+        return true;
     }
 
     public function toArray()
     {
-        $toArray = parent::toArray();
-        $toArray['access_token'] = $this->getAccessToken();
-        $toArray['token_type'] = $this->getTokenType();
-        $toArray['expires_in'] = $this->getExpiresIn();
+        $toArray = array(
+            "issue_time" => $this->getIssueTime(),
+            "access_token" => $this->getAccessToken(),
+            "token_type" => $this->getTokenType(),
+        );
+        if (null !== $this->getExpiresIn()) {
+            $toArray['expires_in'] = $this->getExpiresIn();
+        }
 
         return $toArray;
+    }
+
+    public static function fromArray(array $data)
+    {
+        foreach (array('issue_time', 'access_token', 'token_type') as $key) {
+            if (!array_key_exists($key, $data)) {
+                throw new TokenException(sprintf("required key '%s' missing", $key));
+            }
+        }
+        $expiresIn = array_key_exists('expires_in', $data) ? $data['expires_in'] : null;
+
+        return new self(
+            $data['issue_time'],
+            $data['access_token'],
+            $data['token_type'],
+            $expiresIn
+        );
     }
 }

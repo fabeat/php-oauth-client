@@ -96,4 +96,19 @@ class Context
             "scope" => $this->getScope()->toArray()
         );
     }
+
+    public function equals(Context $that)
+    {
+        if ($this->getClientConfigId() !== $that->getClientConfigId()) {
+            return false;
+        }
+        if ($this->getUserId() !== $that->getUserId()) {
+            return false;
+        }
+        if ($this->getScope()->equals($that->getScope())) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -17,28 +17,24 @@
 
 namespace fkooman\OAuth\Client;
 
-class State extends Token implements TokenInterface
+class State extends Token
 {
     /** @var string */
     private $state;
 
-    public function __construct(array $data)
+    public function __construct($issueTime, $state)
     {
-        parent::__construct($data);
-
-        foreach (array('state') as $key) {
-            if (!array_key_exists($key, $data)) {
-                throw new TokenException(sprintf("missing field '%s'", $key));
-            }
-        }
-
-        $this->setState($data['state']);
+        $this->setIssueTime($issueTime);
+        $this->setState($state);
     }
 
     public function setState($state)
     {
-        if (!is_string($state) || 0 >= strlen($state)) {
-            throw new TokenException("state needs to be a non-empty string");
+        if (!is_string($state)) {
+              throw new TokenException("state needs to be a string");
+        }
+        if (0 >= strlen($state)) {
+            throw new TokenException("state needs to be non-empty");
         }
         $this->state = $state;
     }
@@ -48,23 +44,34 @@ class State extends Token implements TokenInterface
         return $this->state;
     }
 
-    public function compareTo(TokenInterface $state)
+    public function equals(State $that)
     {
-        if (0 !== parent::compareTo($state)) {
-            return -1;
+        if ($this->getIssueTime() !== $that->getIssueTime()) {
+            return false;
         }
-        if ($this->getState() !== $state->getState()) {
-            return -1;
+        if ($this->getState() !== $that->getState()) {
+            return false;
         }
 
-        return 0;
+        return true;
+    }
+
+    public static function fromArray(array $data)
+    {
+        foreach (array('issue_time', 'state') as $key) {
+            if (!array_key_exists($key, $data)) {
+                throw new TokenException(sprintf("required key '%s' missing", $key));
+            }
+        }
+
+        return new self($data['issue_time'], $data['state']);
     }
 
     public function toArray()
     {
-        $toArray = parent::toArray();
-        $toArray['state'] = $this->getState();
-
-        return $toArray;
+        return array(
+            "state" => $this->getState(),
+            "issue_time" => $this->getIssueTime()
+        );
     }
 }

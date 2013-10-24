@@ -19,30 +19,35 @@ namespace fkooman\OAuth\Client;
 
 class AccessTokenTest extends \PHPUnit_Framework_TestCase
 {
-    public function testAccessToken()
+    public function testFromToArray()
     {
-        $accessToken = new AccessToken(
-            array(
-                'client_config_id' => 'foo',
-                'user_id' => 'foouser',
-                'scope' => array('foo', 'bar'),
-                'issue_time' => 123456789,
-                'access_token' => 'foo_access_token',
-                'token_type' => 'bearer',
-                'expires_in' => 3600
-            )
+        $data = array(
+            'issue_time' => 123456789,
+            'access_token' => 'foo_access_token',
+            'token_type' => 'bearer',
+            'expires_in' => 3600
         );
-        $this->assertEquals(
-            array(
-                'client_config_id' => 'foo',
-                'user_id' => 'foouser',
-                'scope' => array('foo', 'bar'),
-                'issue_time' => 123456789,
-                'access_token' => 'foo_access_token',
-                'token_type' => 'bearer',
-                'expires_in' => 3600
-            ),
-            $accessToken->toArray()
+        $accessToken = AccessToken::fromArray($data);
+        $this->assertEquals($data, $accessToken->toArray());
+    }
+
+    public function testEquals()
+    {
+        $dataOne = array(
+            'issue_time' => 123456789,
+            'access_token' => 'foo_access_token',
+            'token_type' => 'bearer',
+            'expires_in' => 3600
         );
+        $dataTwo = array(
+            'issue_time' => 123456789,
+            'access_token' => 'foobar_access_token',
+            'token_type' => 'bearer',
+            'expires_in' => 3600
+        );
+        $accessTokenOne = AccessToken::fromArray($dataOne);
+        $accessTokenTwo = AccessToken::fromArray($dataTwo);
+        $this->assertTrue($accessTokenOne->equals($accessTokenOne));
+        $this->assertFalse($accessTokenOne->equals($accessTokenTwo));
     }
 }

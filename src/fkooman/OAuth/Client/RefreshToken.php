@@ -17,28 +17,24 @@
 
 namespace fkooman\OAuth\Client;
 
-class RefreshToken extends Token implements TokenInterface
+class RefreshToken extends Token
 {
-    /** refresh_token VARCHAR(255) NOT NULL */
+    /** @var string */
     private $refreshToken;
 
-    public function __construct(array $data)
+    public function __construct($issueTime, $refreshToken)
     {
-        parent::__construct($data);
-
-        foreach (array('refresh_token') as $key) {
-            if (!array_key_exists($key, $data)) {
-                throw new TokenException(sprintf("missing field '%s'", $key));
-            }
-        }
-
-        $this->setRefreshToken($data['refresh_token']);
+        $this->setIssueTime($issueTime);
+        $this->setRefreshToken($refreshToken);
     }
 
     public function setRefreshToken($refreshToken)
     {
-        if (!is_string($refreshToken) || 0 >= strlen($refreshToken)) {
-            throw new TokenException("refresh_token needs to be a non-empty string");
+        if (!is_string($refreshToken)) {
+              throw new TokenException("refresh_token needs to be a string");
+        }
+        if (0 >= strlen($refreshToken)) {
+            throw new TokenException("refresh_token needs to be non-empty");
         }
         $this->refreshToken = $refreshToken;
     }
@@ -48,23 +44,34 @@ class RefreshToken extends Token implements TokenInterface
         return $this->refreshToken;
     }
 
-    public function compareTo(TokenInterface $token)
+    public function equals(RefreshToken $that)
     {
-        if (0 !== parent::compareTo($token)) {
-            return -1;
+        if ($this->getIssueTime() !== $that->getIssueTime()) {
+            return false;
         }
-        if ($this->getRefreshToken() !== $token->getRefreshToken()) {
-            return -1;
+        if ($this->getRefreshToken() !== $that->getRefreshToken()) {
+            return false;
         }
 
-        return 0;
+        return true;
+    }
+
+    public static function fromArray(array $data)
+    {
+        foreach (array('issue_time', 'refresh_token') as $key) {
+            if (!array_key_exists($key, $data)) {
+                throw new TokenException(sprintf("required key '%s' missing", $key));
+            }
+        }
+
+        return new self($data['issue_time'], $data['refresh_token']);
     }
 
     public function toArray()
     {
-        $toArray = parent::toArray();
-        $toArray['refresh_token'] = $this->getRefreshToken();
-
-        return $toArray;
+        return array(
+            "refresh_token" => $this->getRefreshToken(),
+            "issue_time" => $this->getIssueTime()
+        );
     }
 }
